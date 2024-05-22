@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1716355842993,
+      "tag": "0000_tearful_the_enforcers",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1716356484407,
+      "tag": "0001_sloppy_major_mapleleaf",
+      "breakpoints": true
+    }
+  ]
+}
