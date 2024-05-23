@@ -29,6 +29,40 @@ const app = new Hono()
       .where(eq(accounts.userId, auth.userId));
     return c.json({ data });
   })
+  .get(
+    "/:id",
+    clerkMiddleware(),
+    zValidator("param", z.object({ id: z.string().optional() })),
+    async (c) => {
+      const auth = getAuth(c);
+      const { id } = c.req.valid("param");
+      if (!auth?.userId) {
+        throw new HTTPException(401, {
+          res: c.json(
+            {
+              message: "Unauthorized",
+            },
+            401
+          ),
+        });
+      }
+      if (!id) {
+        return c.json({ error: "Invalid id" }, 400);
+      }
+      const [data] = await db
+        .select({
+          id: accounts.id,
+          name: accounts.name,
+        })
+        .from(accounts)
+        .where(and(eq(accounts.id, id), eq(accounts.userId, auth.userId)));
+
+      if (!data) {
+        return c.json({ error: "Not found" }, 400);
+      }
+      return c.json({ data });
+    }
+  )
   .post(
     "/",
     clerkMiddleware(),
@@ -82,6 +116,70 @@ const app = new Hono()
         .returning({
           id: accounts.id,
         });
+      return c.json({ data });
+    }
+  )
+  .patch(
+    "/:id",
+    clerkMiddleware(),
+    zValidator("param", z.object({ id: z.string().optional() })),
+    zValidator("json", insertAccountSchema.pick({ name: true })),
+    async (c) => {
+      const auth = getAuth(c);
+      if (!auth?.userId) {
+        throw new HTTPException(401, {
+          res: c.json(
+            {
+              message: "Unauthorized",
+            },
+            401
+          ),
+        });
+      }
+      const values = c.req.valid("json");
+      const { id } = c.req.valid("param");
+      if (!id) {
+        return c.json({ error: "Invalid id" }, 400);
+      }
+      const [data] = await db
+        .update(accounts)
+        .set(values)
+        .where(and(eq(accounts.id, id), eq(accounts.userId, auth.userId)))
+        .returning();
+
+      if (!data) {
+        return c.json({ error: "Not found" }, 400);
+      }
+      return c.json({ data });
+    }
+  )
+  .delete(
+    "/:id",
+    clerkMiddleware(),
+    zValidator("param", z.object({ id: z.string().optional() })),
+    async (c) => {
+      const auth = getAuth(c);
+      if (!auth?.userId) {
+        throw new HTTPException(401, {
+          res: c.json(
+            {
+              message: "Unauthorized",
+            },
+            401
+          ),
+        });
+      }
+      const { id } = c.req.valid("param");
+      if (!id) {
+        return c.json({ error: "Invalid id" }, 400);
+      }
+      const [data] = await db
+        .delete(accounts)
+        .where(and(eq(accounts.id, id), eq(accounts.userId, auth.userId)))
+        .returning();
+      if (!data) {
+        return c.json({ error: "Not found" }, 400);
+      }
       return c.json({ data });
     }
   );
