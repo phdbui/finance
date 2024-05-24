@@ -1,10 +1,9 @@
 "use client";
-
-import { ColumnDef } from "@tanstack/react-table";
 // icons
 import { ArrowUpDown } from "lucide-react";
 // components
 import { Button } from "@/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { InferResponseType } from "hono";

@@ -1,12 +1,13 @@
 import { Hono } from "hono";
 import { db } from "@/db/drizzle";
 import { eq, inArray, and } from "drizzle-orm";
-import { accounts, insertAccountSchema } from "@/db/schema";
+import { categories, insertCategorySchema } from "@/db/schema";
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 import { HTTPException } from "hono/http-exception";
 import { zValidator } from "@hono/zod-validator";
 import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
+
 const app = new Hono()
   .get("/", clerkMiddleware(), async (c) => {
     const auth = getAuth(c);
@@ -17,11 +18,11 @@ const app = new Hono()
     }
     const data = await db
       .select({
-        id: accounts.id,
-        name: accounts.name,
+        id: categories.id,
+        name: categories.name,
       })
-      .from(accounts)
-      .where(eq(accounts.userId, auth.userId));
+      .from(categories)
+      .where(eq(categories.userId, auth.userId));
     return c.json({ data });
   })
   .get(
@@ -37,18 +38,21 @@ const app = new Hono()
         });
       }
       if (!id) {
-        return c.json({ error: "Invalid id" }, 400);
+        throw new HTTPException(400, {
+          res: c.json({ error: "Invalid id" }, 400),
+        });
       }
       const [data] = await db
         .select({
-          id: accounts.id,
-          name: accounts.name,
+          id: categories.id,
+          name: categories.name,
         })
-        .from(accounts)
-        .where(and(eq(accounts.id, id), eq(accounts.userId, auth.userId)));
-
+        .from(categories)
+        .where(and(eq(categories.id, id), eq(categories.userId, auth.userId)));
       if (!data) {
-        return c.json({ error: "Not found" }, 400);
+        throw new HTTPException(404, {
+          res: c.json({ message: "Category not found" }, 404),
+        });
       }
       return c.json({ data });
     }
@@ -56,25 +60,19 @@ const app = new Hono()
   .post(
     "/",
     clerkMiddleware(),
-    zValidator("json", insertAccountSchema.pick({ name: true })),
+    zValidator("json", insertCategorySchema.pick({ name: true })),
     async (c) => {
       const auth = getAuth(c);
-      const values = c.req.valid("json");
       if (!auth?.userId) {
         throw new HTTPException(401, {
-          res: c.json(
-            {
-              message: "Unauthorized",
-            },
-            401
-          ),
+          res: c.json({ message: "Unauthorized" }, 401),
         });
       }
+      const values = c.req.valid("json");
       const [data] = await db
-        .insert(accounts)
+        .insert(categories)
         .values({ id: createId(), userId: auth.userId, ...values })
         .returning();
-
       return c.json({ data });
     }
   )
@@ -86,25 +84,22 @@ const app = new Hono()
       const auth = getAuth(c);
       if (!auth?.userId) {
         throw new HTTPException(401, {
-          res: c.json(
-            {
-              message: "Unauthorized",
-            },
-            401
-          ),
+          res: c.json({ message: "Unauthorized" }, 401),
         });
       }
-      const values = c.req.valid("json");
+      const { ids } = c.req.valid("json");
+      if (!ids) {
+        throw new HTTPException(400, {
+          res: c.json({ error: "Invalid ids" }, 400),
+        });
+      }
       const data = await db
-        .delete(accounts)
+        .delete(categories)
         .where(
-          and(
-            eq(accounts.userId, auth?.userId),
-            inArray(accounts.id, values.ids)
-          )
+          and(inArray(categories.id, ids), eq(categories.userId, auth.userId))
         )
         .returning({
-          id: accounts.id,
+          id: categories.id,
         });
       return c.json({ data });
     }
@@ -112,33 +107,32 @@ const app = new Hono()
   .patch(
     "/:id",
     clerkMiddleware(),
-    zValidator("param", z.object({ id: z.string().optional() })),
-    zValidator("json", insertAccountSchema.pick({ name: true })),
+    zValidator("param", z.object({ id: z.string() })),
+    zValidator("json", insertCategorySchema.pick({ name: true })),
     async (c) => {
       const auth = getAuth(c);
       if (!auth?.userId) {
         throw new HTTPException(401, {
-          res: c.json(
-            {
-              message: "Unauthorized",
-            },
-            401
-          ),
+          res: c.json({ message: "Unauthorized" }, 401),
+        });
+      }
+      const { id } = c.req.valid("param");
+      if (!id) {
+        throw new HTTPException(400, {
+          res: c.json({ error: "Invalid id" }, 400),
         });
       }
       const values = c.req.valid("json");
-      const { id } = c.req.valid("param");
-      if (!id) {
-        return c.json({ error: "Invalid id" }, 400);
-      }
-      const [data] = await db
-        .update(accounts)
-        .set(values)
-        .where(and(eq(accounts.id, id), eq(accounts.userId, auth.userId)))
-        .returning();
 
+      const [data] = await db
+        .update(categories)
+        .set(values)
+        .where(and(eq(categories.id, id), eq(categories.userId, auth.userId)))
+        .returning();
       if (!data) {
-        return c.json({ error: "Not found" }, 404);
+        throw new HTTPException(404, {
+          res: c.json({ message: "Category not found" }, 404),
+        });
       }
       return c.json({ data });
     }
@@ -151,24 +145,23 @@ const app = new Hono()
       const auth = getAuth(c);
       if (!auth?.userId) {
         throw new HTTPException(401, {
-          res: c.json(
-            {
-              message: "Unauthorized",
-            },
-            401
-          ),
+          res: c.json({ message: "Unauthorized" }, 401),
         });
       }
       const { id } = c.req.valid("param");
       if (!id) {
-        return c.json({ error: "Invalid id" }, 400);
+        throw new HTTPException(400, {
+          res: c.json({ error: "Invalid id" }, 400),
+        });
       }
       const [data] = await db
-        .delete(accounts)
-        .where(and(eq(accounts.id, id), eq(accounts.userId, auth.userId)))
+        .delete(categories)
+        .where(and(eq(categories.id, id), eq(categories.userId, auth.userId)))
         .returning();
       if (!data) {
-        return c.json({ error: "Not found" }, 404);
+        throw new HTTPException(404, {
+          res: c.json({ message: "Category not found" }, 404),
+        });
       }
       return c.json({ data });
     }

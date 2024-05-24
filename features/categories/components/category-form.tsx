@@ -1,10 +1,9 @@
-import { z } from "zod";
 import { Trash } from "lucide-react";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertAccountSchema } from "@/db/schema";
-
-// schadn components
+import { insertCategorySchema } from "@/db/schema";
+// components
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-export const formSchema = insertAccountSchema.pick({ name: true });
+export const formSchema = insertCategorySchema.pick({ name: true });
 
 export type FormValues = z.infer<typeof formSchema>;
 
@@ -28,7 +27,7 @@ type Props = {
   disabled?: boolean;
 };
 
-export const AccountForm = ({
+export const CategoryForm = ({
   id,
   defaultValues,
   onSubmit,
@@ -58,7 +57,7 @@ export const AccountForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Account Name</FormLabel>
+              <FormLabel>Category Name</FormLabel>
               <FormControl>
                 <Input
                   disabled={disabled}
@@ -71,7 +70,7 @@ export const AccountForm = ({
           )}
         />
         <Button type="submit" disabled={disabled} className="w-full">
-          {id ? "Save Changes" : "Create Account"}
+          {id ? "Save Changes" : "Create Category"}
         </Button>
         {!!id && (
           <Button

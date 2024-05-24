@@ -1,17 +1,17 @@
 import { create } from "zustand";
 
-type OpenAccountState = {
+type OpenCategoryState = {
   id?: string;
   isOpen: boolean;
   onOpen: (id: string) => void;
   onClose: () => void;
 };
 
-const useOpenAccount = create<OpenAccountState>((set) => ({
+const useOpenCategory = create<OpenCategoryState>((set) => ({
   id: undefined,
   isOpen: false,
   onOpen: (id: string) => set({ isOpen: true, id }),
   onClose: () => set({ isOpen: false, id: undefined }),
 }));
 
-export default useOpenAccount;
+export default useOpenCategory;

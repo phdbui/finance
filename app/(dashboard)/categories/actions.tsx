@@ -1,5 +1,7 @@
 "use client";
-// schadcn components
+// icons
+import { Edit, MoreHorizontal, Trash } from "lucide-react";
+// components
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,21 +9,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-// account api
-import { useDeleteAccount } from "@/features/accounts/api";
-// account hook
-import { useOpenAccount } from "@/features/accounts/hooks";
-// global hook
+import { useDeleteCategory } from "@/features/categories/api";
+import { useOpenCategory } from "@/features/categories/hooks";
 import { useConfirm } from "@/hooks/use-confirm";
-// icons
-import { Edit, MoreHorizontal, Trash } from "lucide-react";
 
 export const Actions = ({ id }: { id: string }) => {
-  const deleteMutation = useDeleteAccount(id);
-  const { onOpen } = useOpenAccount();
+  const deleteMutation = useDeleteCategory(id);
+  const { onOpen } = useOpenCategory();
   const [ConfirmationDialog, confirm] = useConfirm(
-    "Delete Account",
-    "Are you sure you want to delete this account?"
+    "Delete Category",
+    "Are you sure you want to delete this category?"
   );
   const handleDelete = async () => {
     const ok = await confirm();

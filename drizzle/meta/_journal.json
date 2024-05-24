@@ -15,6 +15,13 @@
       "when": 1716356484407,
       "tag": "0001_sloppy_major_mapleleaf",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1716582237608,
+      "tag": "0002_right_tempest",
+      "breakpoints": true
     }
   ]
 }
