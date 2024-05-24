@@ -22,6 +22,20 @@
       "when": 1716582237608,
       "tag": "0002_right_tempest",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1716588733928,
+      "tag": "0003_little_sharon_ventura",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1716590400051,
+      "tag": "0004_massive_violations",
+      "breakpoints": true
     }
   ]
 }
