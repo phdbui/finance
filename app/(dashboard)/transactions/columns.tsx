@@ -11,7 +11,7 @@ import { client } from "@/lib/hono";
 import { Actions } from "./actions";
 
 export type ResponseType = InferResponseType<
-  typeof client.api.categories.$get,
+  typeof client.api.transactions.$get,
   200
 >["data"][0];
 

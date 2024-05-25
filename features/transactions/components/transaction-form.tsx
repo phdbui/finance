@@ -14,17 +14,38 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Select } from "@/components/select";
+import { DatePicker } from "@/components/date-picker";
+import { AmountInput } from "@/components/amount-input";
+import {
+  convertAmountFromMiliunits,
+  convertAmountToMiliunits,
+} from "@/lib/utils";
 
-export const formSchema = insertTransactionSchema.pick({ name: true });
+export const formSchema = z.object({
+  date: z.coerce.date(),
+  amount: z.string(),
+  accountId: z.string(),
+  categoryId: z.string().nullable().optional(),
+  notes: z.string().nullable().optional(),
+  payee: z.string(),
+});
+export const apiSchema = insertTransactionSchema.omit({ id: true });
 
 export type FormValues = z.infer<typeof formSchema>;
+export type ApiValues = z.infer<typeof apiSchema>;
 
 type Props = {
   id?: string;
   defaultValues?: FormValues;
-  onSubmit: (values: FormValues) => void;
+  onSubmit: (values: ApiValues) => void;
   onDelete?: () => void;
   disabled?: boolean;
+  categoryOptions?: { label: string; value: string }[];
+  onCreateCategory: (name: string) => void;
+  accountOptions?: { label: string; value: string }[];
+  onCreateAccount: (name: string) => void;
 };
 
 export const TransactionForm = ({
@@ -33,6 +54,10 @@ export const TransactionForm = ({
   onSubmit,
   onDelete,
   disabled,
+  categoryOptions,
+  onCreateCategory,
+  accountOptions,
+  onCreateAccount,
 }: Props) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -40,7 +65,12 @@ export const TransactionForm = ({
   });
 
   const handleSubmit = (formValues: FormValues) => {
-    onSubmit(formValues);
+    const amount = parseFloat(formValues.amount);
+    const miliunits = convertAmountToMiliunits(amount);
+    onSubmit({
+      ...formValues,
+      amount: miliunits,
+    });
   };
 
   const handleDelete = () => {
@@ -54,21 +84,113 @@ export const TransactionForm = ({
       >
         <FormField
           control={form.control}
-          name="name"
+          name="date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Transaction Name</FormLabel>
               <FormControl>
-                <Input
+                <DatePicker
+                  value={field.value}
+                  onChange={field.onChange}
                   disabled={disabled}
-                  placeholder="e.g. Cash, Bank, Credit Card"
-                  {...field}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="accountId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Account</FormLabel>
+              <FormControl>
+                <Select
+                  onChange={field.onChange}
+                  onCreate={onCreateAccount}
+                  value={field.value}
+                  options={accountOptions}
+                  placeholder="Select an account"
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="categoryId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <FormControl>
+                <Select
+                  onChange={field.onChange}
+                  onCreate={onCreateCategory}
+                  value={field.value}
+                  options={categoryOptions}
+                  placeholder="Select an category"
+                  disabled={disabled}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="payee"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Payee</FormLabel>
+              <FormControl>
+                <Input
+                  disabled={disabled}
+                  {...field}
+                  placeholder="Add a payee"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="amount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Amount</FormLabel>
+              <FormControl>
+                <AmountInput
+                  disabled={disabled}
+                  {...field}
+                  placeholder="0.00"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="notes"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Notes</FormLabel>
+              <FormControl>
+                <Textarea
+                  disabled={disabled}
+                  {...field}
+                  value={field.value ?? ""}
+                  placeholder="Optional notes"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <Button type="submit" disabled={disabled} className="w-full">
           {id ? "Save Changes" : "Create Transaction"}
         </Button>

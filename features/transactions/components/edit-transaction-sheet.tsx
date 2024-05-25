@@ -61,20 +61,24 @@ export const EditTransactionSheet = () => {
         <SheetContent className="space-y-4">
           <SheetHeader>
             <SheetTitle>Edit transaction</SheetTitle>
-            <SheetDescription>Edit the name of the transaction</SheetDescription>
+            <SheetDescription>
+              Edit the name of the transaction
+            </SheetDescription>
           </SheetHeader>
           {isLoading ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <Loader2 className="animate-spin size-6 text-slate-600" />
             </div>
           ) : (
-            <TransactionForm
-              id={id}
-              onSubmit={onSubmit}
-              onDelete={onDelete}
-              defaultValues={defaultValues}
-              disabled={isPending}
-            />
+            <>Transaction form</>
+            // TODO: add transaction form
+            // <TransactionForm
+            //   id={id}
+            //   onSubmit={onSubmit}
+            //   onDelete={onDelete}
+            //   defaultValues={defaultValues}
+            //   disabled={isPending}
+            // />
           )}
         </SheetContent>
       </Sheet>
