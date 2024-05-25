@@ -5,7 +5,10 @@ import { Loader2, Plus } from "lucide-react";
 // transactions hooks
 import { useNewTransaction } from "@/features/transactions/hooks";
 // transactions api
-import { useGetTransactions, useBulkDeleteTransactions } from "@/features/transactions/api";
+import {
+  useGetTransactions,
+  useBulkDeleteTransactions,
+} from "@/features/transactions/api";
 
 // components
 import { Button } from "@/components/ui/button";
@@ -41,7 +44,7 @@ const TransactionsPage = () => {
       <Card className="border-none drop-shadow-sm">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-xl line-clamp-1">
-            Transactions page
+            Transactions History
           </CardTitle>
           <Button size={"sm"} onClick={newTransaction.onOpen}>
             <Plus className="mr-2 size-4" />

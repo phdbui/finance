@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { client } from "@/lib/hono";
+import { convertAmountFromMiliunits } from "@/lib/utils";
 
 const useGetTransactions = () => {
   const searchParams = useSearchParams();
@@ -19,7 +20,10 @@ const useGetTransactions = () => {
       }
       const { data } = await res.json();
 
-      return data;
+      return data.map((transaction) => ({
+        ...transaction,
+        amount: convertAmountFromMiliunits(transaction.amount),
+      }));
     },
   });
   return query;
