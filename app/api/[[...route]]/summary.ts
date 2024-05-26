@@ -123,11 +123,11 @@ const app = new Hono().get(
       .select({
         date: transactions.date,
         income:
-          sql`SUM(CASE WHEN ${transactions.amount} >= 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
+          sql`SUM(CASE WHEN ${transactions.amount} > 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
             Number
           ),
         expenses:
-          sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
+          sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ABS(${transactions.amount}) ELSE 0 END)`.mapWith(
             Number
           ),
       })
@@ -137,7 +137,7 @@ const app = new Hono().get(
         and(
           accountId ? eq(accounts.id, accountId) : undefined,
           eq(accounts.userId, auth.userId),
-          lt(transactions.amount, 0),
+          // lt(transactions.amount, 0),
           gte(transactions.date, startDate),
           lte(transactions.date, endDate)
         )
