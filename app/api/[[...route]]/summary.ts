@@ -35,7 +35,7 @@ const app = new Hono().get(
       : defaultFrom;
     const endDate = to ? parse(to, "yyyy-MM-dd", new Date()) : defaultTo;
     const periodLength = differenceInDays(endDate, startDate) + 1;
-    const lastPeriodStart = subDays(endDate, periodLength);
+    const lastPeriodStart = subDays(startDate, periodLength);
     const lastPeriodEnd = subDays(endDate, periodLength);
 
     async function fetchFinancialData(
@@ -77,17 +77,18 @@ const app = new Hono().get(
       lastPeriodStart,
       lastPeriodEnd
     );
+
     const incomeChange = calculatePercentage(
-      currentPeriod.income,
-      lastPeriod.income
+      currentPeriod.income ?? 0,
+      lastPeriod.income ?? 0
     );
     const expensesChange = calculatePercentage(
-      currentPeriod.expenses,
-      lastPeriod.expenses
+      currentPeriod.expenses ?? 0,
+      lastPeriod.expenses ?? 0
     );
     const remainingChange = calculatePercentage(
-      currentPeriod.remaining,
-      lastPeriod.remaining
+      currentPeriod.remaining ?? 0,
+      lastPeriod.remaining ?? 0
     );
 
     const category = await db

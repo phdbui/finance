@@ -1,6 +1,9 @@
-export default function Home() {
-  // const { data: accounts, isLoading } = useGetAccounts();
+import DataGrid from "@/components/data-grid";
 
-  // if (isLoading) return <div>Loading...</div>;
-  return <div>Hello from the dashboard</div>;
+export default function DashboardPage() {
+  return (
+    <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24">
+      <DataGrid />
+    </div>
+  );
 }
