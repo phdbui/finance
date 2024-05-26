@@ -4,3 +4,4 @@ export { default as useCreateTransaction } from "./use-create-transaction";
 export { default as useEditTransaction } from "./use-edit-transaction";
 export { default as useDeleteTransaction } from "./use-delete-transaction";
 export { default as useBulkDeleteTransactions } from "./use-bulk-delete-transactions";
+export { default as useBulkCreateTransactions } from "./use-bulk-create-transactions";
