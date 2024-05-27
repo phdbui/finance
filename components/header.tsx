@@ -4,6 +4,7 @@ import { UserButton, ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
 import HeaderLogo from "./header-logo";
 import Navigation from "./navigation";
 import WelcomeMsg from "./welcome-msg";
+import Filters from "./filters";
 
 const Header = () => {
   return (
@@ -16,12 +17,13 @@ const Header = () => {
           </div>
           <ClerkLoaded>
             <UserButton afterSignOutUrl="/" />
-          </ClerkLoaded>{" "}
+          </ClerkLoaded>
           <ClerkLoading>
             <Loader2 className="animate-spin size-8 text-slate-400" />
           </ClerkLoading>
         </div>
         <WelcomeMsg />
+        <Filters />
       </div>
     </header>
   );

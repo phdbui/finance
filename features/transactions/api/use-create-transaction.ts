@@ -4,7 +4,9 @@ import { client } from "@/lib/hono";
 import { toast } from "sonner";
 
 type ResponseType = InferResponseType<typeof client.api.transactions.$post>;
-type RequestType = InferRequestType<typeof client.api.transactions.$post>["json"];
+type RequestType = InferRequestType<
+  typeof client.api.transactions.$post
+>["json"];
 
 const useCreateTransaction = () => {
   const queryClient = useQueryClient();
@@ -18,8 +20,8 @@ const useCreateTransaction = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["summary"] });
       toast.success("Transaction created");
-      // TODO: also invalidate summary
     },
     onError: () => {
       toast.error("Failed to create transaction");
